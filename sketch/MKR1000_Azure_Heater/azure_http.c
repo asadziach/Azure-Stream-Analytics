@@ -7,11 +7,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* This sample uses the _LL APIs of iothub_client for example purposes.
-That does not mean that HTTP only works with the _LL APIs.
-Simply changing the using the convenience layer (functions not having _LL)
-and removing calls to _DoWork will yield the same results. */
-
 #ifdef ARDUINO
 #include "AzureIoT.h"
 #else
@@ -31,38 +26,39 @@ and removing calls to _DoWork will yield the same results. */
 static const char* connectionString = AZURE_CONNECTION_STRING;   //  Create network_credentials.secret and define there.
 
 // Define the Model
-BEGIN_NAMESPACE(WeatherStation);
+BEGIN_NAMESPACE(SmartHeater);
 
-DECLARE_MODEL(ContosoAnemometer,
+DECLARE_MODEL(Heater,
 WITH_DATA(ascii_char_ptr, DeviceId),
-WITH_DATA(double, WindSpeed),
-WITH_ACTION(TurnFanOn),
-WITH_ACTION(TurnFanOff),
-WITH_ACTION(SetAirResistance, int, Position)
+WITH_DATA(int, CurrentTemp),
+WITH_DATA(int, gassense),
+WITH_ACTION(TurnHeaterOn),
+WITH_ACTION(TurnHeaterOff),
+WITH_ACTION(SetDesiredTemp, int, temprature)
 );
 
-END_NAMESPACE(WeatherStation);
+END_NAMESPACE(SmartHeater);
 
 DEFINE_ENUM_STRINGS(IOTHUB_CLIENT_CONFIRMATION_RESULT, IOTHUB_CLIENT_CONFIRMATION_RESULT_VALUES)
 
-EXECUTE_COMMAND_RESULT TurnFanOn(ContosoAnemometer* device)
+EXECUTE_COMMAND_RESULT TurnHeaterOn(Heater* device)
 {
     (void)device;
     (void)printf("Turning fan on.\r\n");
     return EXECUTE_COMMAND_SUCCESS;
 }
 
-EXECUTE_COMMAND_RESULT TurnFanOff(ContosoAnemometer* device)
+EXECUTE_COMMAND_RESULT TurnHeaterOff(Heater* device)
 {
     (void)device;
     (void)printf("Turning fan off.\r\n");
     return EXECUTE_COMMAND_SUCCESS;
 }
 
-EXECUTE_COMMAND_RESULT SetAirResistance(ContosoAnemometer* device, int Position)
+EXECUTE_COMMAND_RESULT SetDesiredTemp(Heater* device, int temprature)
 {
     (void)device;
-    (void)printf("Setting Air Resistance Position to %d.\r\n", Position);
+    (void)printf("Setting Desired temprature to %d.\r\n", temprature);
     return EXECUTE_COMMAND_SUCCESS;
 }
 
@@ -144,7 +140,7 @@ void azure_http_run(void)
     {
         IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle = IoTHubClient_LL_CreateFromConnectionString(connectionString, HTTP_Protocol);
         srand((unsigned int)time(NULL));
-        double avgWindSpeed = 10.0;
+        int avgTemp = 25;
 
         if (iotHubClientHandle == NULL)
         {
@@ -166,25 +162,25 @@ void azure_http_run(void)
             }
 #endif // MBED_BUILD_TIMESTAMP
 
-            ContosoAnemometer* myWeather = CREATE_MODEL_INSTANCE(WeatherStation, ContosoAnemometer);
-            if (myWeather == NULL)
+            Heater* heaterIns = CREATE_MODEL_INSTANCE(SmartHeater, Heater);
+            if (heaterIns == NULL)
             {
                 (void)printf("Failed on CREATE_MODEL_INSTANCE\r\n");
             }
             else
             {
-                if (IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, IoTHubMessage, myWeather) != IOTHUB_CLIENT_OK)
+                if (IoTHubClient_LL_SetMessageCallback(iotHubClientHandle, IoTHubMessage, heaterIns) != IOTHUB_CLIENT_OK)
                 {
                     printf("unable to IoTHubClient_SetMessageCallback\r\n");
                 }
                 else
                 {
-                    myWeather->DeviceId = "myFirstDevice";
-                    myWeather->WindSpeed = avgWindSpeed + (rand() % 4 + 2);
+                    heaterIns->DeviceId = "SmartHeater101";
+                    heaterIns->CurrentTemp = avgTemp + (rand() % 4 + 2);
                     {
                         unsigned char* destination;
                         size_t destinationSize;
-                        if (SERIALIZE(&destination, &destinationSize, myWeather->DeviceId, myWeather->WindSpeed) != IOT_AGENT_OK)
+                        if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp) != IOT_AGENT_OK)
                         {
                             (void)printf("Failed to serialize\r\n");
                         }
@@ -211,7 +207,37 @@ void azure_http_run(void)
                             free(destination);
                         }
                     }
+                   heaterIns->gassense = 150;
+                    {
+                        unsigned char* destination;
+                        size_t destinationSize;
+                        if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->gassense) != IOT_AGENT_OK)
+                        {
+                            (void)printf("Failed to serialize\r\n");
+                        }
+                        else
+                        {
+                            IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray(destination, destinationSize);
+                            if (messageHandle == NULL)
+                            {
+                                printf("unable to create a new IoTHubMessage\r\n");
+                            }
+                            else
+                            {
+                                if (IoTHubClient_LL_SendEventAsync(iotHubClientHandle, messageHandle, sendCallback, (void*)1) != IOTHUB_CLIENT_OK)
+                                {
+                                    printf("failed to hand over the message to IoTHubClient");
+                                }
+                                else
+                                {
+                                    printf("IoTHubClient accepted the message for delivery\r\n");
+                                }
 
+                                IoTHubMessage_Destroy(messageHandle);
+                            }
+                            free(destination);
+                        }
+                    }
                     /* wait for commands */
                     while (1)
                     {
@@ -220,7 +246,7 @@ void azure_http_run(void)
                     }
                 }
 
-                DESTROY_MODEL_INSTANCE(myWeather);
+                DESTROY_MODEL_INSTANCE(heaterIns);
             }
             IoTHubClient_LL_Destroy(iotHubClientHandle);
         }
