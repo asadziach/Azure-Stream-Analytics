@@ -2,6 +2,8 @@
 // Copyright (c) Asad Zia
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+#include "Arduino.h"
+
 #include <stdlib.h>
 
 #include <stdio.h>
@@ -246,6 +248,8 @@ void azure_http_run(void)
                         ThreadAPI_Sleep(100);
                         DHT_Readout readout;
                         dht_read(&readout);
+                        int gasval=analogRead(A1); //Read Gas value from analog 1
+                        printf("Gas Sensor: %d\r\n", gasval);
                         delay(1500);
                     }
                 }

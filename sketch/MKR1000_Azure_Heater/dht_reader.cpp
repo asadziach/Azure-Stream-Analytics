@@ -7,7 +7,7 @@
 #include "DHT.h"
 #include "dht_reader.h"
 
-#define DHTPIN 6     // what digital pin we're connected to
+#define DHTPIN 7     // what digital pin we're connected to
 
 // Uncomment whatever type you're using!
 #define DHTTYPE DHT11   // DHT 11
