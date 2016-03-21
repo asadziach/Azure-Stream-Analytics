@@ -19,6 +19,7 @@
 #ifdef MBED_BUILD_TIMESTAMP
 #include "certs.h"
 #endif // MBED_BUILD_TIMESTAMP
+#include "dht_reader.h"
 
 // This file is not added to github because every user has different wifi and cloud credentials.
 #include "network_credentials.h" 
@@ -243,6 +244,9 @@ void azure_http_run(void)
                     {
                         IoTHubClient_LL_DoWork(iotHubClientHandle);
                         ThreadAPI_Sleep(100);
+                        DHT_Readout readout;
+                        dht_read(&readout);
+                        delay(1500);
                     }
                 }
 

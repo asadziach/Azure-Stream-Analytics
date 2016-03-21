@@ -5,6 +5,7 @@
 #include <WiFi101.h>
 
 #include "azure_http.h"
+#include "dht_reader.h"
 
 // This file is not added to github because every user has different wifi and cloud credentials.
 #include "network_credentials.h" 
@@ -16,6 +17,10 @@ int status = WL_IDLE_STATUS;
 
 void setup() {
   Serial.begin(9600);
+
+   dht_setup();              // DHT requires some wait before it can be read. Our
+                             // WiFi setup should procide sufficent delay.    
+   analogReadResolution(12); //The MKR14000, Zero and the Due have 12-bit ADC
 
   // check for the presence of the shield :
   if (WiFi.status() == WL_NO_SHIELD) {
@@ -37,6 +42,8 @@ void setup() {
     }
   }
   Serial.println("Connected to wifi");
+
+  
 }
 
 void loop() {
