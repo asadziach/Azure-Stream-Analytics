@@ -43,13 +43,6 @@ int dht_read(DHT_Readout* readout) {
   readout->temp = t;
   readout->humidity = h;
   
-  Serial.print("Humidity: ");
-  Serial.print(h);
-  Serial.print(" %\t");
-  Serial.print("Temperature: ");
-  Serial.print(t);
-  Serial.println(" *C ");
-  
   return true;
 }
 
