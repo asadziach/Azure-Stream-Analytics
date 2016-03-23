@@ -144,41 +144,11 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
 
     heaterIns->DeviceId = "SmartHeater101";
     heaterIns->CurrentTemp = readout.temp;
-    {
-      unsigned char* destination;
-      size_t destinationSize;
-      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp) != IOT_AGENT_OK)
-      {
-        (void)printf("Failed to serialize\r\n");
-      }
-      else
-      {
-        IOTHUB_MESSAGE_HANDLE messageHandle = IoTHubMessage_CreateFromByteArray(destination, destinationSize);
-        if (messageHandle == NULL)
-        {
-          printf("unable to create a new IoTHubMessage\r\n");
-        }
-        else
-        {
-          if (IoTHubClient_LL_SendEventAsync(iotHubClientHandle, messageHandle, sendCallback, (void*)1) != IOTHUB_CLIENT_OK)
-          {
-            printf("failed to hand over the message to IoTHubClient");
-          }
-          else
-          {
-            printf("IoTHubClient accepted the message for delivery\r\n");
-          }
-
-          IoTHubMessage_Destroy(messageHandle);
-        }
-        free(destination);
-      }
-    }
     heaterIns->gassense = analogRead(A1); //Read Gas value from analog 1;
     {
       unsigned char* destination;
       size_t destinationSize;
-      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->gassense) != IOT_AGENT_OK)
+      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp, heaterIns->gassense) != IOT_AGENT_OK)
       {
         (void)printf("Failed to serialize\r\n");
       }
@@ -205,7 +175,8 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
         free(destination);
       }
     }
-    printf("Gas: %d\tHumidity: %d\t Temperature: %d *C\r\n",heaterIns->gassense,(int)readout.humidity, heaterIns->CurrentTemp);
+
+    printf("Gas: %d\tHumidity: %d\t Temperature: %d *C\r\n", heaterIns->gassense, (int)readout.humidity, heaterIns->CurrentTemp);
   }
 }
 
