@@ -20,7 +20,7 @@ void setup() {
 
    dht_setup();              // DHT requires some wait before it can be read. Our
                              // WiFi setup should procide sufficent delay.    
-   analogReadResolution(12); //The MKR14000, Zero and the Due have 12-bit ADC
+   analogReadResolution(12); //The MKR1000, Zero and the Due have 12-bit ADC
 
   // check for the presence of the shield :
   if (WiFi.status() == WL_NO_SHIELD) {
