@@ -34,6 +34,7 @@ DECLARE_MODEL(Heater,
               WITH_DATA(ascii_char_ptr, DeviceId),
               WITH_DATA(int, CurrentTemp),
               WITH_DATA(int, gassense),
+              WITH_DATA(int, flamesense),
               WITH_ACTION(TurnHeaterOn),
               WITH_ACTION(TurnHeaterOff),
               WITH_ACTION(SetDesiredTemp, int, temprature)
@@ -145,10 +146,11 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
     heaterIns->DeviceId = "SmartHeater101";
     heaterIns->CurrentTemp = readout.temp;
     heaterIns->gassense = analogRead(A1); //Read Gas value from analog 1;
+    heaterIns->flamesense = analogRead(A2); //Read Gas value from analog 1;
     {
       unsigned char* destination;
       size_t destinationSize;
-      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp, heaterIns->gassense) != IOT_AGENT_OK)
+      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp, heaterIns->gassense, heaterIns->flamesense) != IOT_AGENT_OK)
       {
         (void)printf("Failed to serialize\r\n");
       }
