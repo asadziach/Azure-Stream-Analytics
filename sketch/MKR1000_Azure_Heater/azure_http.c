@@ -25,20 +25,24 @@
 
 static const char* connectionString = AZURE_CONNECTION_STRING;   //  Create network_credentials.secret and define there.
 
-const long UPLOAD_INTERVAL = 5000;           // Sensor data upload interval (milliseconds)
+const long UPLOAD_INTERVAL = 10000;           // Sensor data upload interval (milliseconds)
+
+
+static char* Heater_Status = "OFF"; 
 
 // Define the Model
 BEGIN_NAMESPACE(SmartHeater);
 
 DECLARE_MODEL(Heater,
-              WITH_DATA(ascii_char_ptr, DeviceId),
-              WITH_DATA(int, CurrentTemp),
+              WITH_DATA(ascii_char_ptr, deviceid),
+              WITH_DATA(int, currenttemp),
               WITH_DATA(int, gassense),
               WITH_DATA(int, flamesense),
               WITH_DATA(int, humidity),
+              WITH_DATA(ascii_char_ptr, status),
               WITH_ACTION(TurnHeaterOn),
-              WITH_ACTION(TurnHeaterOff),
-              WITH_ACTION(SetDesiredTemp, int, temprature)
+              WITH_ACTION(TurnHeaterOff, int, reason),
+              WITH_ACTION(SetDesiredTemp, int, temperature)
              );
 
 END_NAMESPACE(SmartHeater);
@@ -49,13 +53,21 @@ EXECUTE_COMMAND_RESULT TurnHeaterOn(Heater* device)
 {
   (void)device;
   (void)printf("Turning heater on.\r\n");
+  
+  Heater_Status = "ON";
   return EXECUTE_COMMAND_SUCCESS;
 }
 
-EXECUTE_COMMAND_RESULT TurnHeaterOff(Heater* device)
+EXECUTE_COMMAND_RESULT TurnHeaterOff(Heater* device, int reason)
 {
   (void)device;
   (void)printf("Turning heater off.\r\n");
+
+  if(reason==0){
+      Heater_Status = "OFF";
+  }else{
+    Heater_Status = "ALARM: Forced Off";
+  }
   return EXECUTE_COMMAND_SUCCESS;
 }
 
@@ -144,15 +156,16 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
     DHT_Readout readout;
     dht_read(&readout);
 
-    heaterIns->DeviceId = "Heater1";
-    heaterIns->CurrentTemp = readout.temp;
+    heaterIns->deviceid = "Heater1";
+    heaterIns->currenttemp = readout.temp;
     heaterIns->humidity = readout.humidity;
     heaterIns->gassense = analogRead(A1); //Read Gas value from analog 1;
     heaterIns->flamesense = analogRead(A2); //Read Gas value from analog 1;
+    heaterIns->status = Heater_Status;
     {
       unsigned char* destination;
       size_t destinationSize;
-      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp, heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity) != IOT_AGENT_OK)
+      if (SERIALIZE(&destination, &destinationSize, heaterIns->deviceid, heaterIns->currenttemp, heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity, heaterIns->status ) != IOT_AGENT_OK)
       {
         (void)printf("Failed to serialize\r\n");
       }
@@ -176,11 +189,13 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
 
           IoTHubMessage_Destroy(messageHandle);
         }
+        printf(destination);
         free(destination);
       }
     }
 
-    printf("Gas: %d\tFlame: %d\tHumidity: %d\t Temperature: %d *C\r\n", heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity, heaterIns->CurrentTemp);
+    //printf("Gas: %d\tFlame: %d\tHumidity: %d\t Temperature: %d *C\r\n", heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity, heaterIns->currenttemp);
+    
   }
 }
 
