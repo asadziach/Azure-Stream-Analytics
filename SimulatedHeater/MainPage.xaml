@@ -1,0 +1,25 @@
+﻿<Page
+    x:Class="Microsoft.Azure.Devices.Client.Samples.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Microsoft.Azure.Devices.Client.Samples"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Background="Black">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <TextBlock x:Name="temp" HorizontalAlignment="Left" Margin="98,133,0,0" TextWrapping="Wrap" Text="Temp" VerticalAlignment="Top"/>
+        <TextBlock x:Name="gassense" HorizontalAlignment="Left" Margin="335,133,0,0" TextWrapping="Wrap" Text="Gas Sensor" VerticalAlignment="Top"/>
+        <TextBlock x:Name="flamesense" HorizontalAlignment="Left" Margin="59,237,0,0" TextWrapping="Wrap" Text="Flame Senosr" VerticalAlignment="Top"/>
+        <TextBlock x:Name="humidity" HorizontalAlignment="Left" Margin="348,249,0,0" TextWrapping="Wrap" Text="Humidity" VerticalAlignment="Top"/>
+        <TextBox x:Name="tempval" HorizontalAlignment="Left" Height="20" Margin="165,133,0,0" TextWrapping="Wrap" Text="25" VerticalAlignment="Top" Width="0"/>
+        <TextBox x:Name="gasval" HorizontalAlignment="Left" Margin="424,133,0,0" TextWrapping="Wrap" Text="1000" VerticalAlignment="Top"/>
+        <TextBox x:Name="flameval" HorizontalAlignment="Left" Margin="162,237,0,0" TextWrapping="Wrap" Text="900" VerticalAlignment="Top"/>
+        <TextBox x:Name="humidityval" HorizontalAlignment="Left" Height="20" Margin="431,237,0,0" TextWrapping="Wrap" Text="30" VerticalAlignment="Top" Width="0" RenderTransformOrigin="-0.28,0.919"/>
+        <Button x:Name="Send" Content="Send" HorizontalAlignment="Left" Height="32" Margin="242,328,0,0" VerticalAlignment="Top" Width="97" Click="buttonClicked"/>
+        <TextBox x:Name="recv" HorizontalAlignment="Left" Height="147" Margin="36,489,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="480"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Height="41" Margin="36,448,0,0" TextWrapping="Wrap" Text="Received Command" VerticalAlignment="Top" Width="174"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="205" Margin="36,99,0,0" VerticalAlignment="Top" Width="480"/>
+
+    </Grid>
+</Page>
