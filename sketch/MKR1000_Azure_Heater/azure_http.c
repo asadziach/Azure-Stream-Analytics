@@ -35,6 +35,7 @@ DECLARE_MODEL(Heater,
               WITH_DATA(int, CurrentTemp),
               WITH_DATA(int, gassense),
               WITH_DATA(int, flamesense),
+              WITH_DATA(int, humidity),
               WITH_ACTION(TurnHeaterOn),
               WITH_ACTION(TurnHeaterOff),
               WITH_ACTION(SetDesiredTemp, int, temprature)
@@ -143,14 +144,15 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
     DHT_Readout readout;
     dht_read(&readout);
 
-    heaterIns->DeviceId = "SmartHeater101";
+    heaterIns->DeviceId = "Heater1";
     heaterIns->CurrentTemp = readout.temp;
+    heaterIns->humidity = readout.humidity;
     heaterIns->gassense = analogRead(A1); //Read Gas value from analog 1;
     heaterIns->flamesense = analogRead(A2); //Read Gas value from analog 1;
     {
       unsigned char* destination;
       size_t destinationSize;
-      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp, heaterIns->gassense, heaterIns->flamesense) != IOT_AGENT_OK)
+      if (SERIALIZE(&destination, &destinationSize, heaterIns->DeviceId, heaterIns->CurrentTemp, heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity) != IOT_AGENT_OK)
       {
         (void)printf("Failed to serialize\r\n");
       }
@@ -178,7 +180,7 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
       }
     }
 
-    printf("Gas: %d\tHumidity: %d\t Temperature: %d *C\r\n", heaterIns->gassense, (int)readout.humidity, heaterIns->CurrentTemp);
+    printf("Gas: %d\tFlame: %d\tHumidity: %d\t Temperature: %d *C\r\n", heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity, heaterIns->CurrentTemp);
   }
 }
 
