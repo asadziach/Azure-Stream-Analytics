@@ -67,7 +67,7 @@ namespace Microsoft.Azure.Devices.Client.Samples
                 //  the polling interval to 25 minutes.
                 //  For further information, see
                 //  https://azure.microsoft.com/documentation/articles/iot-hub-devguide/#messaging
-                //await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(TimeSpan.FromSeconds(3));
             }
         }
 

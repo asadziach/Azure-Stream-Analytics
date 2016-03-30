@@ -66,17 +66,6 @@ namespace HeaterController
             }
         }
 
-        private void send_Click(object sender, RoutedEventArgs e)
-        {
-            // SendDeviceToCloudMessagesAsync();
-            //SendEvent(deviceClient);
-        }
-
-        private void receive_Click(object sender, RoutedEventArgs e)
-        {
-            //ReceiveCommands(deviceClient);
-        }
-
         private void SendToastNotification()
         {
             ToastContent content = new ToastContent()
