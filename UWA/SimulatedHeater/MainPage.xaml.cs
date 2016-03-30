@@ -41,7 +41,8 @@ namespace Microsoft.Azure.Devices.Client.Samples
             sEvent.currenttemp = Int32.Parse(tempval.Text);
             sEvent.gassense = Int32.Parse(gasval.Text);
             sEvent.flamesense = Int32.Parse(flameval.Text);
-            sEvent.humidty = Int32.Parse(humidityval.Text);
+            sEvent.humidity = Int32.Parse(humidityval.Text);
+            sEvent.status = statustext.Text;
             String jsongString = JsonConvert.SerializeObject(sEvent);
             IoTClient.SendEvent(jsongString);
         }

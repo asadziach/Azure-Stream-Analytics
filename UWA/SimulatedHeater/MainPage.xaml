@@ -16,10 +16,11 @@
         <TextBox x:Name="gasval" HorizontalAlignment="Left" Margin="424,133,0,0" TextWrapping="Wrap" Text="1000" VerticalAlignment="Top"/>
         <TextBox x:Name="flameval" HorizontalAlignment="Left" Margin="162,237,0,0" TextWrapping="Wrap" Text="900" VerticalAlignment="Top"/>
         <TextBox x:Name="humidityval" HorizontalAlignment="Left" Height="20" Margin="431,237,0,0" TextWrapping="Wrap" Text="30" VerticalAlignment="Top" Width="0" RenderTransformOrigin="-0.28,0.919"/>
-        <Button x:Name="Send" Content="Send" HorizontalAlignment="Left" Height="32" Margin="242,328,0,0" VerticalAlignment="Top" Width="97" Click="buttonClicked"/>
-        <TextBox x:Name="recv" HorizontalAlignment="Left" Height="147" Margin="36,489,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="480"/>
+        <Button x:Name="Send" Content="Send" HorizontalAlignment="Left" Height="32" Margin="238,356,0,0" VerticalAlignment="Top" Width="97" Click="buttonClicked"/>
+        <TextBox x:Name="recv" HorizontalAlignment="Left" Height="147" Margin="36,489,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="480" IsReadOnly="True"/>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Height="41" Margin="36,448,0,0" TextWrapping="Wrap" Text="Received Command" VerticalAlignment="Top" Width="174"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="205" Margin="36,99,0,0" VerticalAlignment="Top" Width="480"/>
+        <TextBox x:Name="statustext" HorizontalAlignment="Left" Margin="185,298,0,0" TextWrapping="Wrap" Text="OFF" VerticalAlignment="Top" Width="223"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="300" Margin="36,105,0,0" VerticalAlignment="Top" Width="480"/>
 
     </Grid>
 </Page>
