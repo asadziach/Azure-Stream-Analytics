@@ -30,7 +30,7 @@ void setup() {
    
   // initialize digital pin as an output. MOSFET gate is also connected to this.
    pinMode(IGNITION_PIN, OUTPUT);
-   digitalWrite(IGNITION_PIN, HIGH);
+   digitalWrite(IGNITION_PIN, HIGH); // Connected to inverted buffer
 
   
    pinMode(SOL_HOLD_PIN, OUTPUT);

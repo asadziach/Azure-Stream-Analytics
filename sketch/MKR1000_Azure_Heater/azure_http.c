@@ -58,12 +58,10 @@ END_NAMESPACE(SmartHeater);
 
 DEFINE_ENUM_STRINGS(IOTHUB_CLIENT_CONFIRMATION_RESULT, IOTHUB_CLIENT_CONFIRMATION_RESULT_VALUES)
 
-EXECUTE_COMMAND_RESULT TurnHeaterOn(Heater* device)
-{
-  (void)device;
+void ignitionSequence(){
   (void)printf("Turning heater on.\r\n");
 
-   //Turn ON both solinoid MOSFETs for trigger mode
+   //Turn ON both solenoid MOSFETs for trigger mode
    digitalWrite(SOL_HOLD_PIN, LOW);
    digitalWrite(SOL_TRIG_PIN, LOW);
 
@@ -84,7 +82,7 @@ EXECUTE_COMMAND_RESULT TurnHeaterOn(Heater* device)
       }else{
         Heater_Status = "ON";
         
-           //Turn OFF high current solinoid MOSFETs for hold mode
+           //Turn OFF high current solenoid MOSFETs for hold mode
         digitalWrite(SOL_TRIG_PIN, HIGH);
         break;
       }
@@ -92,9 +90,15 @@ EXECUTE_COMMAND_RESULT TurnHeaterOn(Heater* device)
   if(j==MAX_TRIES){
      Heater_Status = "ALARM: Ignition failure, turned OFF";
      
-     digitalWrite(SOL_HOLD_PIN, HIGH); // Turn solinoid MOSFETs off
+     digitalWrite(SOL_HOLD_PIN, HIGH); // Turn solenoid MOSFETs off
      digitalWrite(SOL_TRIG_PIN, HIGH);
-  }
+  }  
+}
+
+EXECUTE_COMMAND_RESULT TurnHeaterOn(Heater* device)
+{
+  (void)device;
+  ignitionSequence();
   return EXECUTE_COMMAND_SUCCESS;
 }
 
@@ -238,9 +242,25 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
       }
     }
 
-    //printf("Gas: %d\tFlame: %d\tHumidity: %d\t Temperature: %d *C\r\n", heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity, heaterIns->currenttemp);
+    // Begin temprature control
     displayRefresh(heaterIns->currenttemp,heaterIns->humidity,Desired_Temp);
-    
+    if(heaterIns->currenttemp >= Desired_Temp){
+        printf("Thermostate turning heater off.\r\n");
+        digitalWrite(SOL_HOLD_PIN, HIGH); // Turn solenoid MOSFETs off
+        digitalWrite(SOL_TRIG_PIN, HIGH);
+        Heater_Status = "Themostate Active";
+    }else if(strcmp(Heater_Status,"hemostate Active")==0){
+       ignitionSequence();
+    }
+
+    //Begin flameout safety
+     if(strcmp(Heater_Status,"ON")==0){
+      int sensorRead = analogRead(A2);
+      
+      if(sensorRead > FLAME_THRESHHOLD){
+        TurnHeaterOff(NULL,2);
+      }
+    }
   }
 }
 
