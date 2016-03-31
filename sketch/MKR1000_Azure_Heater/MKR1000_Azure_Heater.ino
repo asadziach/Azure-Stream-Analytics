@@ -11,20 +11,39 @@
 // This file is not added to github because every user has different wifi and cloud credentials.
 #include "network_credentials.h" 
 
+
+#define IGNITION_PIN 4
+
+#define SOL_HOLD_PIN 0 
+#define SOL_TRIG_PIN 1
+
 char ssid[] = WIFI_SSID;        //  Create network_credentials.secret and define there.
 char pass[] = WIFI_PASSWORD;    //  Create network_credentials.secret and define there.
 
 int status = WL_IDLE_STATUS;
 
+
 void setup() {
   Serial.begin(9600);
 
+   lcd_setup();
+   
+  // initialize digital pin as an output. MOSFET gate is also connected to this.
+   pinMode(IGNITION_PIN, OUTPUT);
+   digitalWrite(IGNITION_PIN, HIGH);
+
+  
+   pinMode(SOL_HOLD_PIN, OUTPUT);
+   digitalWrite(SOL_HOLD_PIN, HIGH); // Connected to inverted buffer
+
+   pinMode(SOL_TRIG_PIN, OUTPUT);
+   digitalWrite(SOL_TRIG_PIN, HIGH); // Connected to inverted buffer
+  
    dht_setup();              // DHT requires some wait before it can be read. Our
                              // WiFi setup should procide sufficent delay.    
    analogReadResolution(12); //The MKR1000, Zero and the Due have 12-bit ADC
 
-   lcd_setup();
-   
+
   // check for the presence of the shield :
   if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println("WiFi shield not present");

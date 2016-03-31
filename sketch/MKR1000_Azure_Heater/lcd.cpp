@@ -69,7 +69,7 @@ void lcd_setup()   {
 
   // you can change the contrast around to adapt the display
   // for the best viewing!
-  display.setContrast(40);
+  display.setContrast(50);
 
   display.display(); // show splashscreen
 

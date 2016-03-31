@@ -28,6 +28,13 @@ static const char* connectionString = AZURE_CONNECTION_STRING;   //  Create netw
 
 const long UPLOAD_INTERVAL = 10000;           // Sensor data upload interval (milliseconds)
 
+#define IGNITION_PIN 4
+
+#define SOL_HOLD_PIN 0 
+#define SOL_TRIG_PIN 1
+
+#define MAX_TRIES 20
+#define FLAME_THRESHHOLD 500
 
 static char* Heater_Status = "OFF";
 static int Desired_Temp = 32; 
@@ -55,8 +62,39 @@ EXECUTE_COMMAND_RESULT TurnHeaterOn(Heater* device)
 {
   (void)device;
   (void)printf("Turning heater on.\r\n");
-  
-  Heater_Status = "ON";
+
+   //Turn ON both solinoid MOSFETs for trigger mode
+   digitalWrite(SOL_HOLD_PIN, LOW);
+   digitalWrite(SOL_TRIG_PIN, LOW);
+
+   int j;
+   for(j=0; j< MAX_TRIES; j++){
+      int sensorRead = analogRead(A2);
+      
+      if(sensorRead > FLAME_THRESHHOLD){
+         delay(1000);
+         for(int i=0; i< 10; i++){ 
+          
+           digitalWrite(IGNITION_PIN, LOW);   
+           delay(5);              
+           digitalWrite(IGNITION_PIN, HIGH);    
+           delay(5); 
+           
+         }       
+      }else{
+        Heater_Status = "ON";
+        
+           //Turn OFF high current solinoid MOSFETs for hold mode
+        digitalWrite(SOL_TRIG_PIN, HIGH);
+        break;
+      }
+  }
+  if(j==MAX_TRIES){
+     Heater_Status = "ALARM: Ignition failure, turned OFF";
+     
+     digitalWrite(SOL_HOLD_PIN, HIGH); // Turn solinoid MOSFETs off
+     digitalWrite(SOL_TRIG_PIN, HIGH);
+  }
   return EXECUTE_COMMAND_SUCCESS;
 }
 
@@ -65,6 +103,9 @@ EXECUTE_COMMAND_RESULT TurnHeaterOff(Heater* device, int reason)
   (void)device;
   (void)printf("Turning heater off.\r\n");
 
+  digitalWrite(SOL_HOLD_PIN, HIGH); // Turn solinoid MOSFETs off
+  digitalWrite(SOL_TRIG_PIN, HIGH);
+     
   if(reason==0){
       Heater_Status = "OFF";
   }else{
@@ -163,7 +204,7 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
     heaterIns->currenttemp = readout.temp;
     heaterIns->humidity = readout.humidity;
     heaterIns->gassense = analogRead(A1); //Read Gas value from analog 1;
-    heaterIns->flamesense = analogRead(A2); //Read Gas value from analog 1;
+    heaterIns->flamesense = analogRead(A2); //Read Gas value from analog 2;
     heaterIns->status = Heater_Status;
     {
       unsigned char* destination;
@@ -221,7 +262,7 @@ void azure_http_run(void)
     }
     else
     {
-      unsigned int minimumPollingTime = 9; /*because it can poll "after 9 seconds" polls will happen effectively at ~10 seconds*/
+      unsigned int minimumPollingTime = 4; /*because it can poll "after 4 seconds" polls will happen effectively at ~5 seconds*/
       if (IoTHubClient_LL_SetOption(iotHubClientHandle, "MinimumPollingTime", &minimumPollingTime) != IOTHUB_CLIENT_OK)
       {
         printf("failure to set option \"MinimumPollingTime\"\r\n");
