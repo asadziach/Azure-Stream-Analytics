@@ -6,6 +6,7 @@
 
 #include "azure_http.h"
 #include "dht_reader.h"
+#include "lcd.h"
 
 // This file is not added to github because every user has different wifi and cloud credentials.
 #include "network_credentials.h" 
@@ -22,6 +23,8 @@ void setup() {
                              // WiFi setup should procide sufficent delay.    
    analogReadResolution(12); //The MKR1000, Zero and the Due have 12-bit ADC
 
+   lcd_setup();
+   
   // check for the presence of the shield :
   if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println("WiFi shield not present");

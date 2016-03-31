@@ -3,7 +3,7 @@
   <Role name="sensor_check">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=smhartheaterstorage;AccountKey=bWQBozZN73wTl6BdXtPLR0Qx/VNw0Kz+IiU408PBoIDRQdPIxsD2PxfJleOBMNo3lB4lovhuvfo5Jg9v/HNh/Q==" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="!update this!" />
     </ConfigurationSettings>
   </Role>
   <Role name="telemetry">

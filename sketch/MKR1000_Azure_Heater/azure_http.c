@@ -19,6 +19,7 @@
 #endif
 
 #include "dht_reader.h"
+#include "lcd.h"
 
 // This file is not added to github because every user has different wifi and cloud credentials.
 #include "network_credentials.h"
@@ -28,7 +29,8 @@ static const char* connectionString = AZURE_CONNECTION_STRING;   //  Create netw
 const long UPLOAD_INTERVAL = 10000;           // Sensor data upload interval (milliseconds)
 
 
-static char* Heater_Status = "OFF"; 
+static char* Heater_Status = "OFF";
+static int Desired_Temp = 32; 
 
 // Define the Model
 BEGIN_NAMESPACE(SmartHeater);
@@ -75,6 +77,7 @@ EXECUTE_COMMAND_RESULT SetDesiredTemp(Heater* device, int temprature)
 {
   (void)device;
   (void)printf("Setting Desired temprature to %d.\r\n", temprature);
+  Desired_Temp = temprature;
   return EXECUTE_COMMAND_SUCCESS;
 }
 
@@ -195,6 +198,7 @@ void processSensors(IOTHUB_CLIENT_LL_HANDLE iotHubClientHandle, Heater* heaterIn
     }
 
     //printf("Gas: %d\tFlame: %d\tHumidity: %d\t Temperature: %d *C\r\n", heaterIns->gassense, heaterIns->flamesense, heaterIns->humidity, heaterIns->currenttemp);
+    displayRefresh(heaterIns->currenttemp,heaterIns->humidity,Desired_Temp);
     
   }
 }
