@@ -1,4 +1,5 @@
-# smart_heater_azure
+# Heater Safety and Control via Azure
+
 My submission to https://www.hackster.io/challenges/arduino-microsoft-maker
 
 Please edit the following files with your credentials before running the code:
