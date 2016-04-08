@@ -1,6 +1,9 @@
 # Heater Safety and Control via Azure
+### Azure Stream Analytics watches sensors, control device autonomously, send Tweets and alerts in case of a hazard. Controllable by smartphone.
 
-My submission to https://www.hackster.io/challenges/arduino-microsoft-maker
+Porject Link: https://www.hackster.io/asadzia/heater-safety-and-control-via-azure-840e00
+
+Participated in [World’s Largest Arduino Maker Challenge](https://www.hackster.io/challenges/arduino-microsoft-maker).
 
 Please edit the following files with your credentials before running the code:
 
